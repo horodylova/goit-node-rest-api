@@ -1,10 +1,15 @@
-const path = require("path");
-const fs = require("fs/promises");
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path'; 
+import { readFile, writeFile } from "fs/promises";
+import { v4 as uuidv4 } from 'uuid';
 
-const contactsPath = path.join(__dirname, "db", "contacts.json");
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const contactsPath = join(__dirname, "db", "contacts.json"); 
 
 const listContacts = async () => {
-  const data = await fs.readFile(contactsPath, "utf8");
+  const data = await readFile(contactsPath, "utf8");
   return JSON.parse(data);
 };
 
@@ -16,9 +21,9 @@ const getContactById = async (id) => {
 
 const addContact = async (data) => {
   const contacts = await listContacts();
-  const newContact = { id: crypto.randomUUID(), ...data };
+  const newContact = { id: uuidv4(), ...data };
   contacts.push(newContact);
-  await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2), "utf8");
+  await writeFile(contactsPath, JSON.stringify(contacts, null, 2), "utf8");
   return newContact;
 };
 
@@ -30,13 +35,15 @@ const removeContact = async (id) => {
   }
   const [result] = contacts.splice(index, 1);
 
-  await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2), "utf8");
+  await writeFile(contactsPath, JSON.stringify(contacts, null, 2), "utf8");
   return result;
 };
 
-module.exports = {
-  listContacts,
-  getContactById,
-  addContact,
-  removeContact,
+export default {
+  getAllContacts: listContacts,
+  getOneContact: getContactById,
+  deleteContact: removeContact,
+  createContact: addContact,
+  updateContact,
 };
+
