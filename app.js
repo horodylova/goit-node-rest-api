@@ -2,8 +2,7 @@ import express from "express";
 import cors from "cors";
 import morgan from "morgan";
 import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-
+import { dirname, join } from 'path';
 import contactsRouter from "./routes/contactsRouter.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -24,3 +23,4 @@ app.use((err, _, res, __) => {
   const { status = 500, message = "Server error" } = err;
   res.status(status).json({ message });
 });
+
