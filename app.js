@@ -4,6 +4,7 @@ import morgan from "morgan";
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import contactsRouter from "./routes/contactsRouter.js";
+import validateBody from "./validateBody.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -13,7 +14,8 @@ app.use(cors());
 app.use(express.static(__dirname));
 app.use(morgan("tiny"));
 app.use(express.json());
-app.use("/api/contacts", contactsRouter);
+app.use("/api/contacts", validateBody, contactsRouter);
+
 
 app.listen(3000, () => {
   console.log("The server is up and running. Use our API on port: 3000");
