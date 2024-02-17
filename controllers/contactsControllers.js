@@ -2,11 +2,9 @@ import HttpError from "../helpers/HttpError.js";
 import contactsService from "../services/contactsServices.js";
 import { createContactSchema, updateContactSchema } from "../schemas/contactsSchemas.js";
 
-const validateData = (data, schema) => {
-  return schema.validate(data);
-};
+export const contactsController = {};
 
-export const getAllContacts = async (req, res, next) => {
+contactsController.getAllContacts = async (req, res, next) => {
   try {
     const contacts = await contactsService.getAllContacts();
     res.status(200).json(contacts);
@@ -15,7 +13,7 @@ export const getAllContacts = async (req, res, next) => {
   }
 };
 
-export const getOneContact = async (req, res, next) => {
+contactsController.getOneContact = async (req, res, next) => {
   const { id } = req.params;
   try {
     const contact = await contactsService.getOneContact(id);
@@ -28,7 +26,7 @@ export const getOneContact = async (req, res, next) => {
   }
 };
 
-export const deleteContact = async (req, res, next) => {
+contactsController.deleteContact = async (req, res, next) => {
   const { id } = req.params;
   try {
     const deletedContact = await contactsService.deleteContact(id);
@@ -41,10 +39,10 @@ export const deleteContact = async (req, res, next) => {
   }
 };
 
-export const createContact = async (req, res, next) => {
+contactsController.createContact = async (req, res, next) => {
   const { body } = req;
   try {
-    const { error } = validateData(body, createContactSchema);
+    const { error } = createContactSchema.validate(body);
     if (error) {
       throw HttpError(400, error.message);
     }
@@ -55,11 +53,11 @@ export const createContact = async (req, res, next) => {
   }
 };
 
-export const updateContact = async (req, res, next) => {
+contactsController.updateContact = async (req, res, next) => {
   const { id } = req.params;
   const { body } = req;
   try {
-    const { error } = validateData(body, updateContactSchema);
+    const { error } = updateContactSchema.validate(body);
     if (error) {
       throw HttpError(400, error.message);
     }
@@ -72,3 +70,5 @@ export const updateContact = async (req, res, next) => {
     next(error);
   }
 };
+
+export default contactsController;
