@@ -1,8 +1,7 @@
 import express from "express";
 import cors from "cors";
-import morgan from "morgan";
 import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
+import { dirname } from 'path';
 import contactsRouter from "./routes/contactsRouter.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -11,7 +10,6 @@ const __dirname = dirname(__filename);
 const app = express();
 app.use(cors());
 app.use(express.static(__dirname));
-app.use(morgan("tiny"));
 app.use(express.json());
 
 app.use((req, res, next) => {
