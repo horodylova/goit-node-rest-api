@@ -1,6 +1,6 @@
 import HttpError from "../helpers/HttpError.js";
 import contactsService from "../services/contactsServices.js";
-import { createContactSchema, updateContactSchema } from "../schemas/contactsSchemas"
+import { createContactSchema, updateContactSchema } from "../schemas/contactsSchemas.js";
 
 const validateData = (data, schema) => {
   return schema.validate(data);
