@@ -26,6 +26,16 @@ contactsController.getOneContact = catchAsync(async (req, res, next) => {
   });
 });
 
+contactsController.updateContact = catchAsync(async (req, res, next) => {
+    const { id } = req.params;
+
+    const renewContact = await Contact.findByIdAndUpdate(id, {name, email, phone, favorite}, {new: true});
+    res.status(200).json({
+    message: 'Success',
+    contact: renewContact,
+  })
+});
+
 
 // contactsController.deleteContact = async (req, res, next) => {
 //   const { id } = req.params;
@@ -53,22 +63,7 @@ contactsController.getOneContact = catchAsync(async (req, res, next) => {
 //   }
 // };
 
-// contactsController.updateContact = async (req, res, next) => {
-//   const { id } = req.params;
-//   try {
-//     const { error } = updateContactSchema.validate(req.body);
-//     if (error) {
-//       throw HttpError(400, error.message);
-//     }
-//     const updatedContact = await contactsService.updateContact(id, req.body);
-//     if (!updatedContact) {
-//       throw HttpError(404, "Contact not found");
-//     }
-//     res.status(200).json(updatedContact);
-//   } catch (error) {
-//     next(error);
-//   }
-// };
+//
 
 export default contactsController;
 
