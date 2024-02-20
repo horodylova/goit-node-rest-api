@@ -3,8 +3,14 @@ import morgan from "morgan";
 import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from 'dotenv';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+import contactsRouter from "./routes/contactsRouter.js";
 
 dotenv.config({ path: './envs/development.env' });
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const app = express();
 
@@ -26,11 +32,15 @@ mongoose.connect(mongoURI)
 
 app.use(morgan("tiny"));
 app.use(cors());
+app.use(express.static(__dirname));
 app.use(express.json());
 
-app.use((_, res) => {
-  res.status(404).json({ message: "Route not found" });
+app.use((req, res, next) => {
+  console.log("Request received:", req.method, req.url);
+  next();
 });
+
+app.use("/api/contacts", contactsRouter);
 
 app.use((err, req, res, next) => {
   const { status = 500, message = "Server error" } = err;
@@ -38,3 +48,5 @@ app.use((err, req, res, next) => {
 });
 
 export default app;
+
+
