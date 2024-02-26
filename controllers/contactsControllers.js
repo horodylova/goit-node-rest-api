@@ -8,7 +8,22 @@ export const contactsController = {
     } catch (err) {
       next(err);
     }
+  },
+
+  async getOneContact (req, res, next) {
+    try {
+      const contact = await Contact.findById();
+      res.send(contact);
+
+      if(contact === null) {
+        res.status(404).send("Contact not found")
+      }
+    }
+    catch (err) {next(err);
   }
+}
+
+
 };
 
 // import catchAsync from '../utils/catchAsync.js';  
