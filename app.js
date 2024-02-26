@@ -1,39 +1,26 @@
 import express from "express";
 import morgan from "morgan";
 import cors from "cors";
-import mongoose from "mongoose";
-import dotenv from 'dotenv';
+import 'dotenv/config';
+import './db.js';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import contactsRouter from "./routes/contactsRouter.js";
-
-dotenv.config({ path: './envs/development.env' });
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const app = express();
 
-const port = process.env.PORT;
-const mongoURI = process.env.MONGO_URL;
-
-mongoose.connect(mongoURI)
-  .then(() => {
-    console.log("MongoDB connected");
-    app.listen(port, () => {
-      console.log(`Server is running. Use our API on port: ${port}`);
-    });
-  })
-  .catch((err) => {
-    console.error("MongoDB connection error:", err);
-    process.exit(1);
-  });
-
-
 app.use(morgan("tiny"));
 app.use(cors());
 app.use(express.static(__dirname));
 app.use(express.json());
+
+const PORT = process.env.PORT || 3000; 
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
 
 app.use((req, res, next) => {
   console.log("Request received:", req.method, req.url);

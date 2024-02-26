@@ -1,12 +1,14 @@
 import express from "express";
-import contactsController from "../controllers/contactsControllers.js";
+import { contactsController } from "../controllers/contactsControllers.js"; 
 
 const contactsRouter = express.Router();
+const jsonParser = express.json();
 
-contactsRouter.get("/", contactsController.getAllContacts);
-contactsRouter.get("/:id", contactsController.getOneContact);
+contactsRouter.get("/", contactsController.getAllContacts);  
+
+// contactsRouter.get("/:id", contactsController.getOneContact);
 // contactsRouter.delete("/:id", contactsController.deleteContact);
-// contactsRouter.post("/", contactsController.createContact);
-// contactsRouter.put("/:id", contactsController.updateContact);
+// contactsRouter.post("/", jsonParser, contactsController.createContact);
+// contactsRouter.put("/:id", jsonParser, contactsController.updateContact);
 
 export default contactsRouter;

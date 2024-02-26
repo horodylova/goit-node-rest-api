@@ -1,13 +1,13 @@
-import { Schema, model } from 'mongoose'; 
-// import { contactRolesEnum } from '../constants/contactRolesEnum.js';  
+import mongoose from "mongoose";
 
-const contactSchema = new Schema({
+const contactSchema = new mongoose.Schema({
   name: {
     type: String,
     required: [true, 'Set name for contact'],
   },
   email: {
     type: String,
+    match: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 
   },
   phone: {
     type: String,
@@ -18,5 +18,5 @@ const contactSchema = new Schema({
   },
 });
 
-const Contact = model('Contact', contactSchema); 
-export default Contact;
+export default mongoose.model("Contact", contactSchema);
+
