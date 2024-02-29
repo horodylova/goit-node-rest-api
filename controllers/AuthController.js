@@ -5,14 +5,16 @@ async function register(req, res, next) {
   try {
     const { password, email, subscription, token } = req.body;
 
+    const normalizedEmail = email.toLowerCase();
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const existingUser = await UserModel.findOne({ email });
+    const existingUser = await UserModel.findOne({ email: normalizedEmail });
     if (existingUser) {
       return res.status(400).send('User with this email already exists');
     }
 
-    const newUser = await UserModel.create({ password: hashedPassword, email, subscription, token });
+    const newUser = await UserModel.create({ password: hashedPassword, email: normalizedEmail, subscription, token });
 
     console.log(newUser);
 
