@@ -1,0 +1,19 @@
+# Dependency directories
+node_modules/
+
+# Environment variables file
+.env
+
+# Log files
+logs/
+*.log
+
+# IDE and editor files
+.vscode/
+.idea/
+
+# macOS
+.DS_Store
+
+# npm package lock file
+package-lock.json
