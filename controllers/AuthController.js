@@ -11,7 +11,7 @@ async function register(req, res, next) {
 
     const existingUser = await UserModel.findOne({ email: normalizedEmail });
     if (existingUser) {
-      return res.status(400).send('User with this email already exists');
+      return res.status(409).send('User with this email already exists');
     }
 
     const newUser = await UserModel.create({ password: hashedPassword, email: normalizedEmail, subscription, token });
