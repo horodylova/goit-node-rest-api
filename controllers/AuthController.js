@@ -1,10 +1,13 @@
-import UserModel from "../models/user.js";
+import UserModel from "../models/userModel.js";
 
 async function register(req, res, next) {
   try {
-    const newUser = await UserModel.create(req.body);
+    const { password, email, subscription, token } = req.body;
+    const result = await UserModel.create({password, email, subscription, token});
+    
+    console.log(result);
 
-    res.status(200).send('User registered successfully');
+    res.status(201).send('User registered successfully');
   } catch (error) {
     next(error);
   }

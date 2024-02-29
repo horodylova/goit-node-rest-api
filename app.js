@@ -6,7 +6,7 @@ import express from "express";
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import contactsRouter from "./routes/contactsRouter.js";
-import AuthRouter from "./routes/auth.js";
+import AuthRouter from "./routes/authRouter.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -28,7 +28,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/auth/register", AuthRouter);
+app.use("/api/auth", AuthRouter);
 app.use("/api/contacts", contactsRouter);
 
 app.use((err, req, res, next) => {
