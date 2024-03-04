@@ -1,6 +1,5 @@
 import morgan from "morgan";
 import cors from "cors";
-import 'dotenv/config';
 import './db.js';
 import express from "express"; 
 import { fileURLToPath } from 'url';
@@ -32,6 +31,7 @@ app.use("/api/auth", AuthRouter);
 app.use("/api/contacts", contactsRouter);
 
 app.use((err, req, res, next) => {
+  console.error("An error occurred:", err);
   const { status = 500, message = "Server error" } = err;
   res.status(status).json({ message });
 });
