@@ -24,6 +24,27 @@ async function register(req, res, next) {
   }
 }
 
-export default { register };
+async function login(req, res, next) {
+  const { email, password } = req.body;
+  const normalizedEmail = email.toLowerCase();
+
+  try {
+    const user = await UserModel.findOne({ email: normalizedEmail });
+    if (!user) {
+      return res.status(401).send({ message: "Email or password incorrect" });
+    }
+
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    if (!passwordMatch) {
+      return res.status(401).send({ message: "Email or password incorrect" });
+    }
+
+    res.status(200).send({ message: "Login successful" });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export default { register, login };
 
 
