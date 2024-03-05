@@ -1,12 +1,19 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import UserModel from "../models/userModel.js";
+import dotenv from 'dotenv';
+dotenv.config();
 
 async function register(req, res, next) {
   try {
     const { password, email, subscription, token } = req.body;
 
     const normalizedEmail = email.toLowerCase();
+
+    const existingUser = await UserModel.findOne({ email: normalizedEmail });
+    if (existingUser) {
+      return res.status(409).send('User with this email already exists');
+    }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -56,6 +63,8 @@ async function login(req, res, next) {
 }
 
 export default { register, login };
+
+
 
 
 
