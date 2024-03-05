@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+
 dotenv.config();
 
 function auth(req, res, next) {
@@ -12,10 +13,14 @@ function auth(req, res, next) {
     const token = authHeader.split(' ')[1];
 
     try {
+        if (token !== req.headers.authorization.split(' ')[1]) {
+            return res.status(401).json({ message: 'Unauthorized: Invalid token' });
+        }
+    
         const decoded = jwt.verify(token, process.env.JWT_TOKEN);
-
+    
         req.user = decoded;
-
+    
         next();
     } catch (error) {
         return res.status(401).json({ message: 'Unauthorized: Invalid token' });
@@ -23,4 +28,5 @@ function auth(req, res, next) {
 }
 
 export default auth;
+
 
