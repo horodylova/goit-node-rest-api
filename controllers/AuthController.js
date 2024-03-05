@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import UserModel from "../models/userModel.js";
+import HttpError from '../helpers/HttpError.js'; 
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -12,7 +13,7 @@ async function register(req, res, next) {
 
     const existingUser = await UserModel.findOne({ email: normalizedEmail });
     if (existingUser) {
-      return res.status(409).send('User with this email already exists');
+      throw new HttpError(409, 'User with this email already exists'); 
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -28,7 +29,7 @@ async function register(req, res, next) {
 
     res.status(201).json(newUser);
   } catch (error) {
-    next(error);
+    next(error); 
   }
 }
 
@@ -36,35 +37,48 @@ async function login(req, res, next) {
   try {
     const { email, password } = req.body;
     if (!email) {
-      return res.status(400).send({ message: "Email is required" });
+      throw new HttpError(400, "Email is required"); 
     }
 
     const normalizedEmail = email.toLowerCase();
 
     const user = await UserModel.findOne({ email: normalizedEmail });
     if (!user) {
-      return res.status(401).send({ message: "Email or password incorrect" });
+      throw new HttpError(401, "Email or password incorrect"); 
     }
 
     const passwordMatch = await bcrypt.compare(password, user.password);
     if (!passwordMatch) {
-      return res.status(401).send({ message: "Email or password incorrect" });
+      throw new HttpError(401, "Email or password incorrect"); 
     }
 
     const token = jwt.sign({
       id: user._id
     }, process.env.JWT_TOKEN);
 
-    console.log("Generated token:", token);
+    await UserModel.findByIdAndUpdate(user._id, {token});
 
     res.send({ token });
   } catch (error) {
     console.error("Error during login:", error);
     next(error);
   }
+};
+
+async function logout(req, res, next) {
+  try {
+    const userId = req.user.id;
+
+    await UserModel.findByIdAndUpdate(userId, { token: null });
+
+    res.status(200).send({ message: "Logout successful" });
+  } catch (error) {
+    console.error("Error during logout:", error);
+    next(error);
+  }
 }
 
-export default { register, login };
+export default { register, login, logout };
 
 
 

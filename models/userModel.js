@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const userSchema = mongoose.Schema({
+const UserSchema = mongoose.Schema({
   password: {
     type: String,
     required: [true, 'Password is required'],
@@ -21,5 +21,5 @@ const userSchema = mongoose.Schema({
   },
 });
 
-const UserModel = mongoose.model('User', userSchema);
+const UserModel = mongoose.model('User', UserSchema);
 export default UserModel;
