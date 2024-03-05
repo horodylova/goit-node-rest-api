@@ -55,6 +55,8 @@ async function login(req, res, next) {
       id: user._id
     }, process.env.JWT_TOKEN);
 
+    console.log("Generated token:", token);
+
     res.send({ token });
   } catch (error) {
     console.error("Error during login:", error);
