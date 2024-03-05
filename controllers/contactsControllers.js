@@ -5,7 +5,11 @@ import { createContactSchema, updateContactSchema } from "../schemas/contactsSch
 export const contactsController = {
   async getAllContacts(req, res, next) {
     try {
-      const contacts = await Contact.find({ ownerId: req.user.id });
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 20;
+      const skip = (page - 1) * limit;
+
+      const contacts = await Contact.find({ ownerId: req.user.id }).skip(skip).limit(limit);
       res.send(contacts);
     } catch (err) {
       next(err);
