@@ -7,6 +7,7 @@ const jsonParser = express.json();
 
 AuthRouter.post('/register', jsonParser, AuthController.register);
 AuthRouter.post('/login', jsonParser, AuthController.login);
-AuthRouter.post('/logout', auth, AuthController.logout); 
+AuthRouter.get('/logout', auth, AuthController.logout); 
+AuthRouter.get('/current', auth, AuthController.getCurrentUser); 
 
 export default AuthRouter;
