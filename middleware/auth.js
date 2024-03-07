@@ -1,10 +1,11 @@
 import jwt from 'jsonwebtoken';
 import HttpError from '../helpers/HttpError.js';
 import dotenv from 'dotenv';
+import UserModel from '../models/userModel.js'; 
 
 dotenv.config();
 
-const auth = (req, res, next) => {
+const auth = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
 
@@ -15,7 +16,14 @@ const auth = (req, res, next) => {
     const token = authHeader.split(' ')[1];
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
+    console.log(decoded);
+
+    const user = await UserModel.findById(decoded.id);
+    if (!user) {
+      throw HttpError(401, 'User not found');
+    }
+
+    req.user = user;
 
     next();
   } catch (error) {
@@ -24,6 +32,7 @@ const auth = (req, res, next) => {
 };
 
 export default auth;
+
 
 
 

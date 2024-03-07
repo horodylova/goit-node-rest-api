@@ -29,7 +29,7 @@ const register = async (req, res, next) => {
 
       const newToken = jwt.sign({
           id: newUser._id
-      }, process.env.JWT_TOKEN);
+      }, process.env.JWT_SECRET); 
 
       newUser.token = newToken;
       await newUser.save();
@@ -67,7 +67,7 @@ const login = async (req, res, next) => {
 
     const token = jwt.sign({
       id: user._id
-    }, process.env.JWT_TOKEN);
+    }, process.env.JWT_SECRET); 
 
     await UserModel.findByIdAndUpdate(user._id, { token });
 
@@ -108,6 +108,7 @@ const getCurrentUser = async (req, res, next) => {
 
 
 export default { register, login, logout, getCurrentUser };
+
 
 
 

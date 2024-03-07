@@ -21,7 +21,7 @@ const contactSchema = new Schema({
   ownerId: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
-    // ref: 'user'
+    ref: 'user'
   }
 });
 
