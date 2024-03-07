@@ -107,7 +107,6 @@ const getCurrentUser = async (req, res, next) => {
 };
 
 
-
 export default { register, login, logout, getCurrentUser };
 
 

@@ -20,7 +20,7 @@ export const contactsController = {
     try {
       const contact = await Contact.findOne({ _id: req.params.id, ownerId: req.user.id });
       if (!contact) {
-        throw new HttpError(404, "Contact not found");
+        throw HttpError(404, "Contact not found");
       }
       res.send(contact);
     } catch (err) {
@@ -33,7 +33,7 @@ export const contactsController = {
       const { id } = req.params;
       const { error } = updateContactSchema.validate(req.body);
       if (error) {
-        throw new HttpError(400, error.message);
+        throw HttpError(400, error.message);
       }
 
       const updatedContact = await Contact.findOneAndUpdate(
@@ -43,7 +43,7 @@ export const contactsController = {
       );
 
       if (!updatedContact) {
-        throw new HttpError(404, "Contact not found");
+        throw HttpError(404, "Contact not found");
       }
 
       res.status(200).json({
@@ -60,7 +60,7 @@ export const contactsController = {
     try {
       const deletedContact = await Contact.findOneAndDelete({ _id: id, ownerId: req.user.id });
       if (!deletedContact) {
-        throw new HttpError(404, "Contact not found");
+        throw HttpError(404, "Contact not found");
       }
       res.status(200).json(deletedContact);
     } catch (error) {
@@ -72,7 +72,7 @@ export const contactsController = {
     try {
       const { error } = createContactSchema.validate(req.body);
       if (error) {
-        throw new HttpError(400, error.message);
+        throw HttpError(400, error.message);
       }
 
       const newContact = await Contact.create({ ...req.body, ownerId: req.user.id });
@@ -94,7 +94,7 @@ export const contactsController = {
       );
 
       if (!existingContact) {
-        throw new HttpError(404, "Contact not found");
+        throw HttpError(404, "Contact not found");
       }
 
       res.status(200).json(existingContact);
