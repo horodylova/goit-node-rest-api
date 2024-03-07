@@ -5,60 +5,79 @@ import HttpError from '../helpers/HttpError.js';
 import dotenv from 'dotenv';
 dotenv.config();
 
-async function register(req, res, next) {
+const register = async (req, res, next) => {
   try {
-    const { password, email, subscription, token } = req.body;
+      const { password, email, subscription, token } = req.body;
 
-    const normalizedEmail = email.toLowerCase();
+      if (!email || !password) {
+          throw HttpError(400, 'Email and password are required');
+      }
 
-    const existingUser = await UserModel.findOne({ email: normalizedEmail });
-    if (existingUser) {
-      throw new HttpError(409, 'User with this email already exists'); 
-    }
+      const existingUser = await UserModel.findOne({ email });
+      if (existingUser) {
+          throw HttpError(409, 'Email in use');
+      }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+      const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newUser = await UserModel.create({
-      password: hashedPassword,
-      email: normalizedEmail,
-      subscription,
-      token
-    });
+      const newUser = await UserModel.create({
+          email,
+          password: hashedPassword,
+          subscription,
+          token: null  
+      });
 
-    console.log(newUser);
+      const newToken = jwt.sign({
+          id: newUser._id
+      }, process.env.JWT_TOKEN);
 
-    res.status(201).json(newUser);
+      newUser.token = newToken;
+      await newUser.save();
+
+      res.status(201).json({
+          user: {
+              email: newUser.email,
+              subscription: newUser.subscription
+          }
+      });
   } catch (error) {
-    next(error); 
+      next(error);
   }
-}
+};
 
-async function login(req, res, next) {
+
+const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
-    if (!email) {
-      throw new HttpError(400, "Email is required"); 
+    if (!email || !password) {
+      throw HttpError(400, "Email and password are required");  
     }
 
     const normalizedEmail = email.toLowerCase();
 
     const user = await UserModel.findOne({ email: normalizedEmail });
     if (!user) {
-      throw new HttpError(401, "Email or password incorrect"); 
+      throw HttpError(401, "Email or password is wrong");  
     }
 
     const passwordMatch = await bcrypt.compare(password, user.password);
     if (!passwordMatch) {
-      throw new HttpError(401, "Email or password incorrect"); 
+      throw HttpError(401, "Email or password is wrong");  
     }
 
     const token = jwt.sign({
       id: user._id
     }, process.env.JWT_TOKEN);
 
-    await UserModel.findByIdAndUpdate(user._id, {token});
+    await UserModel.findByIdAndUpdate(user._id, { token });
 
-    res.send({ token });
+    res.status(200).json({
+      token,
+      user: {
+        email: user.email,
+        subscription: user.subscription
+      }
+    });
   } catch (error) {
     console.error("Error during login:", error);
     next(error);
@@ -77,17 +96,22 @@ async function logout(req, res, next) {
     next(error);
   }
 }
-
 const getCurrentUser = async (req, res, next) => {
   try {
     const { email, subscription } = req.user;
-    res.status(200).json({ email, subscription });
+
+    res.status(200).json({ email, subscription } );
   } catch (error) {
     next(error);
   }
 };
 
-export default { register, login, logout, getCurrentUser }; 
+
+
+export default { register, login, logout, getCurrentUser };
+
+
+
 
 
 

@@ -29,7 +29,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/api/auth", AuthRouter);
+app.use("/users", AuthRouter);
 app.use("/api/contacts", auth, contactsRouter);
 
 app.use((err, req, res, next) => {

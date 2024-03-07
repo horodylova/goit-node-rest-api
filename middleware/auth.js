@@ -1,32 +1,29 @@
 import jwt from 'jsonwebtoken';
+import HttpError from '../helpers/HttpError.js';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
-function auth(req, res, next) {
+const auth = (req, res, next) => {
+  try {
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return res.status(401).json({ message: 'Unauthorized: Missing or invalid authorization header' });
+      throw HttpError(401, 'Not authorized');
     }
 
     const token = authHeader.split(' ')[1];
 
-    try {
-        if (token !== req.headers.authorization.split(' ')[1]) {
-            return res.status(401).json({ message: 'Unauthorized: Invalid token' });
-        }
-    
-        const decoded = jwt.verify(token, process.env.JWT_TOKEN);
-    
-        req.user = decoded;
-    
-        next();
-    } catch (error) {
-        return res.status(401).json({ message: 'Unauthorized: Invalid token' });
-    }
-}
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded;
+
+    next();
+  } catch (error) {
+    next(error);
+  }
+};
 
 export default auth;
+
 
 
