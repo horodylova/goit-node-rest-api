@@ -118,16 +118,16 @@ const getCurrentUser = async (req, res, next) => {
 async function uploadAvatar(req, res, next) {
   try {
     if (!req.file) {
-      throw new HttpError(400, 'No file uploaded');
+      throw HttpError(400, 'No file uploaded');
     }
 
     const user = await UserModel.findByIdAndUpdate(
       req.user.id,
-      { avatar: `/avatars/${req.file.filename}` },
+      { avatar: `${req.file.filename}` },
       { new: true }
     );
     if (!user) {
-      throw new HttpError(401, 'Not authorized');
+      throw HttpError(401, 'Not authorized');
     }
 
     const oldPath = req.file.path;
@@ -143,5 +143,20 @@ async function uploadAvatar(req, res, next) {
   }
 }
 
+async function getAvatar(req, res, next) {
+  try {
+    const user = await UserModel.findById(req.user.id);
+    if (!user) {
+      throw HttpError(401, 'Not authorized');
+    }
+    if (!user.avatar) {
+      throw HttpError(400, "Avatar not found");
+    }
+    const avatarPath = path.join(process.cwd(), "public/avatars", user.avatar);
+    res.sendFile(avatarPath);
+  } catch (error) {
+    next(error);
+  }
+}
 
-export default { register, login, logout, getCurrentUser, uploadAvatar };
+export default { register, login, logout, getCurrentUser, uploadAvatar, getAvatar };
