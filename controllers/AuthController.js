@@ -24,6 +24,7 @@ const register = async (req, res, next) => {
     if (existingUser) {
       throw HttpError(409, "Email in use");
     }
+
     const avatarURL = gravatar.url(email, { s: '200', d: 'identicon' });
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -124,7 +125,7 @@ const getCurrentUser = async (req, res, next) => {
 async function uploadAvatar(req, res, next) {
   try {
     if (!req.file) {
-      throw new HttpError(400, 'No file uploaded');
+      throw HttpError(400, 'No file uploaded');
     }
 
     const user = await UserModel.findByIdAndUpdate(
@@ -133,16 +134,17 @@ async function uploadAvatar(req, res, next) {
       { new: true }
     );
     if (!user) {
-      throw new HttpError(401, 'Not authorized');
+      throw HttpError(401, 'Not authorized');
     }
 
     const oldPath = req.file.path;
     const newPath = path.join(process.cwd(), 'public', 'avatars', req.file.filename);
 
-    const image = await Jimp.read(oldPath);
-    await image.resize(250, 250).writeAsync(newPath);
+    await fsPromises.rename(oldPath, newPath); 
 
-    const avatarURL = `/avatars/${req.file.filename}`;
+    const avatarURL = `${req.file.filename}`;
+
+    // await fsPromises.unlink(oldPath);
 
     res.status(200).json({ avatarURL });
   } catch (error) {
@@ -151,20 +153,4 @@ async function uploadAvatar(req, res, next) {
   }
 }
 
-async function getAvatar(req, res, next) {
-  try {
-    const user = await UserModel.findById(req.user.id);
-    if (!user) {
-      throw HttpError(401, 'Not authorized');
-    }
-    if (!user.avatar) {
-      throw HttpError(400, "Avatar not found");
-    }
-    const avatarPath = path.join(process.cwd(), "public/avatars", user.avatar);
-    res.sendFile(avatarPath);
-  } catch (error) {
-    next(error);
-  }
-}
-
-export default { register, login, logout, getCurrentUser, uploadAvatar, getAvatar };
+export default { register, login, logout, getCurrentUser, uploadAvatar };
