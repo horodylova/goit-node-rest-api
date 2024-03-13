@@ -6,6 +6,9 @@ import dotenv from "dotenv";
 import multer from 'multer';
 import { promises as fsPromises } from 'fs';
 import * as path from "path";
+import gravatar from 'gravatar';
+import Jimp from 'jimp';
+
 
 dotenv.config();
 
@@ -21,6 +24,7 @@ const register = async (req, res, next) => {
     if (existingUser) {
       throw HttpError(409, "Email in use");
     }
+    const avatarURL = gravatar.url(email, { s: '200', d: 'identicon' });
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -29,6 +33,7 @@ const register = async (req, res, next) => {
       password: hashedPassword,
       subscription,
       token: null,
+      avatarURL, 
     });
 
     const newToken = jwt.sign(
@@ -45,6 +50,7 @@ const register = async (req, res, next) => {
       user: {
         email: newUser.email,
         subscription: newUser.subscription,
+        avatarURL: newUser.avatarURL,
       },
     });
   } catch (error) {
@@ -118,21 +124,23 @@ const getCurrentUser = async (req, res, next) => {
 async function uploadAvatar(req, res, next) {
   try {
     if (!req.file) {
-      throw HttpError(400, 'No file uploaded');
+      throw new HttpError(400, 'No file uploaded');
     }
 
     const user = await UserModel.findByIdAndUpdate(
       req.user.id,
-      { avatar: `${req.file.filename}` },
+      { avatar: req.file.filename },
       { new: true }
     );
     if (!user) {
-      throw HttpError(401, 'Not authorized');
+      throw new HttpError(401, 'Not authorized');
     }
 
     const oldPath = req.file.path;
     const newPath = path.join(process.cwd(), 'public', 'avatars', req.file.filename);
-    await fsPromises.rename(oldPath, newPath); 
+
+    const image = await Jimp.read(oldPath);
+    await image.resize(250, 250).writeAsync(newPath);
 
     const avatarURL = `/avatars/${req.file.filename}`;
 
