@@ -144,8 +144,6 @@ async function uploadAvatar(req, res, next) {
 
     const avatarURL = `${req.file.filename}`;
 
-    // await fsPromises.unlink(oldPath);
-
     res.status(200).json({ avatarURL });
   } catch (error) {
     console.error('Error during avatar upload:', error);
