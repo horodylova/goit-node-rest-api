@@ -106,7 +106,7 @@ async function logout(req, res, next) {
 
     await UserModel.findByIdAndUpdate(userId, { token: null });
 
-    res.status(200).send({ message: "Logout successful" });
+    res.status(204).send({ message: "Logout successful" });
   } catch (error) {
     console.error("Error during logout:", error);
     next(error);
