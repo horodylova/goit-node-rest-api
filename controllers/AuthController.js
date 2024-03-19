@@ -108,6 +108,7 @@ const resendVerificationEmail = async (req, res, next) => {
     }
 
     const verificationToken = user.verificationToken;
+
     await transporter.sendMail({
       from: 'horodylova.sv@gmail.com',
       to: email,
@@ -121,6 +122,7 @@ const resendVerificationEmail = async (req, res, next) => {
     next(error);
   }
 };
+
 
 
 
