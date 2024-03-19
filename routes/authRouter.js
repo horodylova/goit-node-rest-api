@@ -12,7 +12,7 @@ AuthRouter.post('/logout', auth, AuthController.logout);
 AuthRouter.get('/current', auth, AuthController.getCurrentUser); 
 AuthRouter.patch('/avatar', auth, upload.single('avatar'), AuthController.uploadAvatar);
 AuthRouter.get('/verify/:verificationToken', AuthController.verifyEmail);
-AuthRouter.post('/users/verify', AuthController.resendVerificationEmail);
+AuthRouter.post('/verify', AuthController.resendVerificationEmail);
 
 
 
